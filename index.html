@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Revalita Food And Drink - Pesan Take Away</title>
+    <!-- Tailwind CSS untuk Styling Modern -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            500: '#f97316', // Orange
+                            600: '#ea580c',
+                            700: '#c2410c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .smooth-transition { transition: all 0.3s ease; }
+        
+        /* Global Styles untuk Vercel (Kode pemblokir Blogger telah dihapus) */
+        body, html {
+            margin: 0; 
+            padding: 0; 
+            background-color: #f9fafb; 
+            overflow-x: hidden; 
+            width: 100%; 
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans pb-24 relative">
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg z-[100] hidden opacity-0 smooth-transition flex items-center gap-2 max-w-[90%] text-sm font-medium">
+        <i class="fas fa-info-circle"></i>
+        <span id="toast-message"></span>
+    </div>
+
+    <!-- WRAPPER CUSTOMER VIEW -->
+    <div id="customer-view">
+
+    <!-- Header / Hero Section -->
+    <header class="text-white pt-8 pb-12 px-4 rounded-b-3xl shadow-lg relative overflow-hidden bg-cover bg-center bg-no-repeat" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('https://image2url.com/r2/default/files/1772942207309-732c51db-222d-40fb-b822-c0ec978e848d.jpg');">
+        <div class="max-w-3xl mx-auto relative z-10 flex flex-col items-center text-center">
+            <div class="w-28 h-28 bg-white rounded-full flex items-center justify-center shadow-lg mb-4 border-4 border-white overflow-hidden">
+                <img src="https://image2url.com/r2/default/files/1772942282802-9206f4b3-28f7-439c-9425-8b13540d196d.jpg" alt="Logo Revalita Food" class="w-full h-full object-cover">
+            </div>
+            <h1 class="text-3xl font-bold tracking-tight mb-2">Revalita Food & Drink</h1>
+            <p class="text-brand-100 text-sm md:text-base mb-2">Lezat, Cepat, dan Menggugah Selera. Pesan Take Away sekarang!</p>
+            <p class="text-white text-xs md:text-sm mb-4 px-4 max-w-md text-center leading-relaxed">
+                <i class="fas fa-map-marker-alt text-brand-200 mr-1"></i> Jl. Raya Dasuk, Desa Kerta Timur (Sebelah Timur Kantor Kecamatan Dasuk)
+            </p>
+            <div class="inline-flex items-center gap-2 bg-brand-700/50 px-4 py-1.5 rounded-full text-sm backdrop-blur-sm">
+                <i class="fas fa-clock text-brand-100"></i> Buka: 10:00 - 21:00 WIB
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-3xl mx-auto px-4 -mt-6 relative z-20">
+        
+        <!-- Filter Kategori -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-2 flex gap-2 overflow-x-auto no-scrollbar mb-6 sticky top-2 z-30">
+            <button onclick="filterMenu('Semua')" id="btn-Semua" class="filter-btn px-5 py-2 rounded-lg bg-brand-500 text-white font-medium text-sm whitespace-nowrap smooth-transition">Semua Menu</button>
+            <button onclick="filterMenu('Makanan')" id="btn-Makanan" class="filter-btn px-5 py-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 font-medium text-sm whitespace-nowrap smooth-transition">🥘 Makanan</button>
+            <button onclick="filterMenu('Minuman')" id="btn-Minuman" class="filter-btn px-5 py-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 font-medium text-sm whitespace-nowrap smooth-transition">🍹 Minuman</button>
+            <button onclick="filterMenu('Snack')" id="btn-Snack" class="filter-btn px-5 py-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 font-medium text-sm whitespace-nowrap smooth-transition">🍟 Snack</button>
+            <button onclick="filterMenu('Catering')" id="btn-Catering" class="filter-btn px-5 py-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 font-medium text-sm whitespace-nowrap smooth-transition"> Catering</button>
+        </div>
+
+        <!-- Daftar Menu -->
+        <div id="menu-container" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <!-- Item menu dirender dari JS -->
+        </div>
+
+        <!-- News Section -->
+        <div id="news-section" class="mt-10 mb-8 hidden">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800 border-l-4 border-brand-500 pl-3">Berita & Promo</h2>
+            </div>
+            <div id="news-container" class="flex flex-col gap-4">
+                <!-- News items rendered here -->
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="max-w-3xl mx-auto text-center pt-10 pb-28 px-4 text-xs md:text-sm text-gray-400">
+        <p>Gambar tema oleh <span class="font-semibold text-gray-500">hd.dsk</span></p>
+        <p class="mt-1 text-[10px] text-gray-300">&copy; 2026 Revalita Food And Drink</p>
+    </footer>
+
+    <!-- Floating Cart Bar -->
+    <div id="floating-cart" class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] p-4 transform translate-y-full smooth-transition z-40 hidden flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex-1 max-w-3xl mx-auto w-full flex items-center justify-between">
+            <div>
+                <p class="text-xs text-gray-500 font-medium mb-0.5">Total Pesanan (<span id="cart-count-badge">0</span> item)</p>
+                <p class="text-lg font-bold text-brand-600" id="cart-total-floating">Rp 0</p>
+            </div>
+            <button onclick="toggleCartModal()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 rounded-xl font-medium shadow-md flex items-center gap-2 transition-colors">
+                <i class="fas fa-shopping-basket"></i> Lihat Keranjang
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating WA -->
+    <a href="#" onclick="contactAdmin(event)" class="fixed bottom-24 right-4 bg-green-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition-colors z-30" aria-label="Hubungi Admin">
+        <i class="fab fa-whatsapp text-2xl"></i>
+    </a>
+
+    <!-- MODAL BERITA -->
+    <div id="news-modal" class="fixed inset-0 bg-black/60 z-[60] hidden opacity-0 smooth-transition backdrop-blur-sm flex justify-center items-end md:items-center md:p-4">
+        <div class="absolute inset-0" onclick="closeNews()"></div>
+        <div class="w-full relative z-10 bg-white rounded-t-3xl md:rounded-2xl h-[90vh] md:h-auto md:max-h-[85vh] flex flex-col md:max-w-2xl shadow-2xl transform translate-y-full smooth-transition" id="news-modal-content">
+            <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center shrink-0">
+                <h2 class="text-lg font-bold text-gray-800 truncate pr-4"><i class="far fa-newspaper text-brand-500 mr-2"></i> Info Terbaru</h2>
+                <button onclick="closeNews()" class="text-gray-400 hover:text-red-500 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center transition-colors shrink-0">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="overflow-y-auto flex-1 custom-scrollbar pb-6">
+                <img id="news-detail-image" src="" class="w-full h-48 md:h-64 object-cover bg-gray-100" onerror="this.src='https://placehold.co/600x400/e2e8f0/64748b?text=Tidak+Ada+Gambar'">
+                <div class="p-5 md:p-6">
+                    <h1 id="news-detail-title" class="text-xl md:text-2xl font-bold text-gray-800 mb-3 leading-tight"></h1>
+                    <div class="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
+                        <span id="news-detail-date" class="text-sm font-medium text-brand-600"></span>
+                        <button onclick="copyNewsLink()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 shadow-sm">
+                            <i class="fas fa-share-alt"></i> Bagikan Link
+                        </button>
+                    </div>
+                    <div id="news-detail-content" class="text-sm md:text-base text-gray-700 leading-relaxed space-y-4 whitespace-pre-wrap">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL KERANJANG -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/60 z-50 hidden opacity-0 smooth-transition backdrop-blur-sm flex justify-center items-end md:items-center md:p-4">
+        <div class="absolute inset-0" onclick="toggleCartModal()"></div>
+        <div class="w-full relative z-10 bg-gray-50 rounded-t-3xl md:rounded-2xl max-h-[85vh] flex flex-col md:max-w-md shadow-2xl transform translate-y-full smooth-transition" id="cart-modal-content">
+            <div class="bg-white px-5 py-4 rounded-t-3xl md:rounded-t-2xl border-b border-gray-100 flex justify-between items-center shrink-0">
+                <h2 class="text-lg font-bold text-gray-800"><i class="fas fa-shopping-basket text-brand-500 mr-2"></i> Keranjang Anda</h2>
+                <button onclick="toggleCartModal()" class="text-gray-400 hover:text-red-500 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-5 overflow-y-auto flex-1 min-h-0 custom-scrollbar">
+                <div id="cart-items-container" class="space-y-4 mb-6"></div>
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm mb-6">
+                    <h3 class="text-sm font-bold text-gray-800 mb-3"><i class="fas fa-user-edit text-brand-500 mr-1"></i> Data Pemesan</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <input type="text" id="customer-name" placeholder="Nama Anda" class="w-full text-sm px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors">
+                        </div>
+                        <div>
+                            <textarea id="customer-notes" placeholder="Catatan (Misal: Pedas, es dipisah, dll)" rows="2" class="w-full text-sm px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <h3 class="text-sm font-bold text-gray-800 mb-1"><i class="fas fa-qrcode text-brand-500 mr-1"></i> Scan QRIS</h3>
+                    <p class="text-xs text-gray-500 mb-3">Silakan scan dan <b>masukkan nominal berikut</b> ke aplikasi Anda:</p>
+                    <div class="bg-brand-50 py-2 px-3 rounded-lg mb-3 border border-brand-100">
+                        <span class="text-xs text-brand-700 block mb-1">Nominal yang harus dibayar:</span>
+                        <span class="text-xl font-bold text-brand-600" id="qr-total-amount">Rp 0</span>
+                    </div>
+                    <div class="flex justify-center mb-3 relative min-h-[192px]">
+                        <img id="qr-code-img" src="" alt="QRIS Warung" 
+                             onerror="this.onerror=null; this.src='https://placehold.co/400x400/fee2e2/ef4444?text=Link+QRIS+Salah/Rusak'; this.classList.add('border-red-500');"
+                             class="w-48 h-48 md:w-56 md:h-56 object-contain border border-gray-200 rounded-lg shadow-sm bg-white">
+                    </div>
+                    <p class="text-xs text-gray-500 italic">*Screenshot QR ini, lalu kirim bukti transfer ke WhatsApp Admin.</p>
+                </div>
+            </div>
+            <div class="bg-white p-5 border-t border-gray-100 rounded-b-none md:rounded-b-2xl shrink-0 z-20">
+                <button onclick="checkoutToWhatsApp()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl flex justify-center items-center gap-2 shadow-lg shadow-green-500/30 transition-all active:scale-95">
+                    <i class="fab fa-whatsapp text-xl"></i> Kirim Pesanan & Bukti Transfer
+                </button>
+            </div>
+        </div>
+    </div>
+    </div> <!-- END CUSTOMER VIEW -->
+
+    <!-- ADMIN VIEW PANEL (CLOUD SYNC) -->
+    <div id="admin-view" class="hidden fixed inset-0 bg-gray-100 z-[120] overflow-y-auto pb-24">
+        <div class="max-w-3xl mx-auto p-4 pt-6 md:pt-10">
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm mb-6 border border-gray-200">
+                <h1 class="text-xl font-bold text-gray-800"><i class="fas fa-cloud text-brand-500 mr-2"></i> Cloud Admin</h1>
+                <button onclick="keluarAdmin()" class="text-gray-500 hover:text-red-500 bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="bg-green-50 border border-green-200 p-4 rounded-xl mb-6 text-sm text-green-800 shadow-sm flex items-start gap-3">
+                <i class="fas fa-check-circle text-green-500 mt-0.5 text-lg"></i>
+                <div>
+                    <p class="font-bold mb-1">Terhubung ke Database Cloud!</p>
+                    <p>Semua perubahan yang Anda lakukan di sini akan langsung disimpan ke Google Sheets dan otomatis tampil untuk pelanggan. Tidak perlu Copy-Paste kode lagi!</p>
+                </div>
+            </div>
+
+            <!-- TAB NAVIGASI ADMIN -->
+            <div class="flex gap-2 mb-6 border-b border-gray-200">
+                <button onclick="switchAdminTab('menu')" id="admin-tab-menu" class="pb-2 border-b-2 border-brand-500 text-brand-600 font-bold px-2 text-sm flex-1 md:flex-none">Menu Makanan</button>
+                <button onclick="switchAdminTab('news')" id="admin-tab-news" class="pb-2 border-b-2 border-transparent text-gray-500 font-medium px-2 text-sm flex-1 md:flex-none">Berita & Promo</button>
+                <div class="flex-1 text-right">
+                   <button onclick="loadDataDariGAS()" class="text-gray-500 hover:text-brand-600 transition" title="Refresh Data"><i class="fas fa-sync-alt"></i></button>
+                </div>
+            </div>
+
+            <!-- TAB KONTEN MENU -->
+            <div id="admin-content-menu">
+                <div class="flex gap-2 mb-4">
+                    <button onclick="bukaFormAdmin()" class="flex-1 bg-brand-500 text-white py-3 px-2 rounded-xl font-bold hover:bg-brand-600 transition shadow-sm text-sm"><i class="fas fa-plus mr-1"></i> Tambah Menu</button>
+                </div>
+                <!-- List Menu Admin -->
+                <div id="admin-menu-list" class="space-y-3">
+                    <!-- Render from JS -->
+                </div>
+            </div>
+
+            <!-- TAB KONTEN BERITA -->
+            <div id="admin-content-news" class="hidden">
+                <div class="flex gap-2 mb-4">
+                    <button onclick="bukaFormAdminNews()" class="flex-1 bg-blue-500 text-white py-3 px-2 rounded-xl font-bold hover:bg-blue-600 transition shadow-sm text-sm"><i class="fas fa-plus mr-1"></i> Tambah Berita</button>
+                </div>
+                <div id="admin-news-list" class="space-y-3">
+                    <!-- Render from JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Admin Modal -->
+        <div id="admin-form-modal" class="fixed inset-0 bg-black/60 hidden z-[130] flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white p-6 rounded-3xl w-full max-w-md shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="admin-modal-title" class="text-lg font-bold text-gray-800">Tambah Menu</h2>
+                    <button onclick="tutupFormAdmin()" class="text-gray-400 hover:text-red-500 bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="space-y-4">
+                    <input type="hidden" id="admin-id">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Nama Menu</label>
+                        <input type="text" id="admin-nama" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-500 outline-none bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Deskripsi Singkat</label>
+                        <input type="text" id="admin-desc" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-500 outline-none bg-gray-50">
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Harga (Angka)</label>
+                            <input type="number" id="admin-harga" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-500 outline-none bg-gray-50" placeholder="15000">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Kategori</label>
+                            <select id="admin-kategori" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-500 outline-none bg-gray-50">
+                                <option>Makanan</option>
+                                <option>Minuman</option>
+                                <option>Snack</option>
+                                <option>Catering</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">URL Gambar</label>
+                        <input type="text" id="admin-gambar" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-500 outline-none bg-gray-50" placeholder="https://...">
+                    </div>
+                    <button id="btn-simpan-admin" onclick="simpanDataAdmin()" class="w-full bg-brand-500 text-white font-bold py-3.5 rounded-xl mt-4 shadow-lg shadow-brand-500/30 transition-all flex items-center justify-center gap-2">
+                        <i class="fas fa-save"></i> Simpan ke Cloud
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Admin Berita Modal -->
+        <div id="admin-form-news-modal" class="fixed inset-0 bg-black/60 hidden z-[130] flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white p-6 rounded-3xl w-full max-w-md shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="admin-news-modal-title" class="text-lg font-bold text-gray-800">Tambah Berita</h2>
+                    <button onclick="tutupFormAdminNews()" class="text-gray-400 hover:text-red-500 bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="space-y-4">
+                    <input type="hidden" id="admin-news-id">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Judul Berita/Promo</label>
+                        <input type="text" id="admin-news-title" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-500 outline-none bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Tanggal (Cth: 17 Agustus 2026)</label>
+                        <input type="text" id="admin-news-date" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-500 outline-none bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Gambar Header (Upload atau URL)</label>
+                        <div class="flex flex-col gap-2">
+                            <!-- Input untuk unggah gambar dari penyimpanan lokal -->
+                            <input type="file" id="admin-news-image-file" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition" onchange="compressAndPreviewNewsImage(event)">
+                            <input type="hidden" id="admin-news-image-base64">
+                            <!-- Input URL lama tetap dipertahankan sebagai opsi alternatif -->
+                            <input type="text" id="admin-news-image" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-500 outline-none bg-gray-50" placeholder="Atau paste URL gambar di sini...">
+                            
+                            <div id="admin-news-image-preview-container" class="hidden mt-1">
+                                <img id="admin-news-image-preview" src="" class="h-32 w-auto object-cover rounded-lg border border-gray-200 shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Isi Berita</label>
+                        <textarea id="admin-news-content" rows="4" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-500 outline-none bg-gray-50"></textarea>
+                    </div>
+                    <button id="btn-simpan-admin-news" onclick="simpanDataAdminNews()" class="w-full bg-blue-500 text-white font-bold py-3.5 rounded-xl mt-4 shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2">
+                        <i class="fas fa-save"></i> Simpan ke Cloud
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // ==========================================
+        // KONFIGURASI WEB & API CLOUD (GAS)
+        // ==========================================
+        const WA_ADMIN_NUMBER = "6285259385869";
+        const NAMA_TOKO = "Revalita Food And Drink";
+        const QRIS_IMAGE_URL = "https://image2url.com/r2/default/files/1772857488653-fe1b389f-399b-492e-bacd-f65ddebd7d7d.jpg";
+
+        // !!! GANTI URL DI BAWAH INI DENGAN WEB APP URL DARI GOOGLE APPS SCRIPT ANDA !!!
+        // Biarkan kosong seperti ini "" jika Anda belum memiliki URL-nya.
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw12Wi8IO2bAA6F08bYdxp-9YG_c-hwIg-28w786INrvvs6gO6I6gTBlEFEx28WaTbf/exec"; 
+
+        // Data Fallback jika GAS gagal dimuat (Atau jika URL GAS belum diisi).
+        // Saya pertahankan data lama Anda di sini sesuai permintaan.
+        const FALLBACK_DATA = [
+            { id: "AGHN", name: "Ayam Geprek Hemat + Nasi", desc: "Nasi Ayam Geprek dengan free Air Cleo Mini.", price: 11000, category: "Makanan", image: "https://image2url.com/r2/default/files/1772943541142-10f1a927-b657-4e19-8bf8-dfbbdbd39cd3.jpg" },
+            { id: "AGTN", name: "Ayam Geprek Tanpa Nasi", desc: "Ayam Geprek yang gurih tanpa nasi.", price: 11000, category: "Makanan", image: "https://www.image2url.com/r2/default/images/1791252661127-3d341458-86ab-4876-8323-c3614c2ae394.jpg" },
+            { id: "MDW", name: "Mie Dower", desc: "Mie goreng bumbu khas Jawa dengan toping abon ayam.", price: 10000, category: "Makanan", image: "https://image2url.com/r2/default/files/1772943808762-8088c462-132a-4ac7-82ea-340f30f955c6.jpeg" },
+            { id: "IAGTN", name: "Indomie Ayam Geprek", desc: "Indomie ayam geprek tanpa nasi.", price: 15000, category: "Makanan", image: "https://image2url.com/r2/default/files/1772944134530-d2cd7c96-14d8-4ad5-9187-826d3619d9e5.jpg" },
+            { id: "TGN", name: "Telur Geprek + Nasi", desc: "Dengan telur dadar dengan campuran tepung yang gurih.", price: 11000, category: "Makanan", image: "https://image2url.com/r2/default/files/1772944464408-450969b3-5b10-4ea0-9943-eee222e58b25.jpg" },
+            { id: "BTGC", name: "Batagor Campur", desc: "Baso tahu goreng dengan bumbu kacang yang gurih.", price: 10000, category: "Makanan", image: "https://image2url.com/r2/default/files/1772947018690-ba6af0b8-7942-4ce9-a1d1-694bf3991511.png" },
+            { id: "AGRN", name: "Ayam Geprek Reguler + Nasi", desc: "Free air botol cleo mini", price: 14000, category: "Makanan", image: "https://image2url.com/r2/default/files/1772948780343-1e4f344f-2ea9-465b-a6c8-8c60c96e6c92.png" },
+            { id: "IC", name: "Es Kopi Susu", desc: "Kopi espresso, susu segar, dan gula aren nusantara.", price: 6000, category: "Minuman", image: "https://image2url.com/r2/default/files/1772944977604-df66e841-5c90-4059-83e3-0184dd76373a.jpeg" },
+            { id: "STJ", name: "Es Teh Jumbo Ahank", desc: "Teh racikan berkwalitas premium,gelas jumbo.", price: 4000, category: "Minuman", image: "https://image2url.com/r2/default/files/1772947331022-a9ac7762-db27-422c-81dc-1d777f92b58d.png" },
+            { id: "STM", name: "Es Teh Mini Ahank", desc: "Teh racikan berkwalitas premium, gelas jumbo.", price: 2000, category: "Minuman", image: "https://image2url.com/r2/default/files/1772945535316-788494b7-8c24-4539-992e-c3651835fe43.jpg" },
+            { id: "SJR", name: "Es Jeruk Jumbo Ahank", desc: "Jeruk buah segar pilihan.", price: 5000, category: "Minuman", image: "https://image2url.com/r2/default/files/1772950223990-6920a0db-5070-4bc0-9cd1-9189db3e771c.png" }
+        ];
+
+        // Data Berita 
+        let NEWS_DATA = [
+            { 
+                id: "promo-agustus", 
+                title: "Promo Spesial Kemerdekaan! Gratis Es Teh Tiap Beli Ayam Geprek", 
+                date: "12 Agustus 2026", 
+                image: "https://placehold.co/600x400/fee2e2/ef4444?text=Promo+Kemerdekaan", 
+                content: "Menyambut hari kemerdekaan, Revalita Food And Drink memberikan promo spesial. Dapatkan GRATIS 1 Es Teh Jumbo untuk setiap pembelian Ayam Geprek Hemat + Nasi!\n\nPromo ini berlaku dari tanggal 15 hingga 17 Agustus 2026. Jangan sampai ketinggalan, yuk buruan pesan sekarang dan ajak teman-temanmu!" 
+            },
+            { 
+                id: "menu-baru-seblak", 
+                title: "Segera Hadir: Seblak Prasmanan Kuah Pedas Jeletot", 
+                date: "01 Agustus 2026", 
+                image: "https://placehold.co/600x400/fef08a/ca8a04?text=Menu+Baru", 
+                content: "Kabar gembira bagi pecinta pedas! Dalam waktu dekat kami akan meluncurkan menu baru yaitu Seblak Prasmanan.\n\nKalian bisa memilih toping sesuka hati dengan kuah pedas jeletot yang gurih dan nagih. Pantau terus update dari kami ya!" 
+            }
+        ];
+
+        let MENU_DATA = [...FALLBACK_DATA];
+        let cart = {}; 
+        let currentCategory = 'Semua';
+
+        const formatRupiah = (angka) => {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+        };
+
+        const formatDate = (dateStr) => {
+            if (!dateStr) return '';
+            // Perbaiki jika format tanggal dari Excel berubah menjadi ISO (mengandung T dan Z)
+            if (dateStr.includes('T') && dateStr.includes('Z')) {
+                try {
+                    const d = new Date(dateStr);
+                    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                } catch(e) {}
+            }
+            return dateStr;
+        };
+
+        function showNotification(message, isError = false) {
+            const toast = document.getElementById('toast-notification');
+            const toastMsg = document.getElementById('toast-message');
+            
+            if (isError) {
+                toast.classList.remove('bg-gray-800');
+                toast.classList.add('bg-red-500');
+            } else {
+                toast.classList.add('bg-gray-800');
+                toast.classList.remove('bg-red-500');
+            }
+
+            toastMsg.innerText = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.remove('opacity-0'), 10);
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        }
+
+        // ==========================================
+        // FETCH DATA DARI CLOUD SPREADSHEET
+        // ==========================================
+        async function loadDataDariGAS() {
+            const adminContainer = document.getElementById('admin-menu-list');
+
+            // 1. TAMPILKAN UI SECARA INSTAN
+            if(checkAdminURL()) {
+                if (adminContainer) adminContainer.innerHTML = '<div class="text-center text-gray-500 py-6 text-sm"><i class="fas fa-sync-alt fa-spin mr-2"></i> Sinkronisasi Cloud...</div>';
+            } else {
+                renderMenu();
+                renderNews();
+                checkUrlParams(); 
+            }
+
+            // 2. AMBIL DATA CLOUD DI BACKGROUND (Mencegah layar macet di HP)
+            if (!GAS_URL || GAS_URL.trim() === "") return;
+
+            try {
+                const response = await fetch(GAS_URL);
+                const data = await response.json();
+                
+                if (data && !data.error) {
+                    if (data.menus && data.menus.length > 0) MENU_DATA = data.menus;
+                    if (data.news) NEWS_DATA = data.news;
+                    
+                    // Re-render UI secara diam-diam setelah data baru berhasil masuk
+                    if(checkAdminURL()) {
+                        renderAdminList();
+                    } else {
+                        renderMenu();
+                        renderNews();
+                        checkUrlParams(true); // Cek URL lagi dan update berita terbuka (jika ada)
+                    }
+                }
+            } catch (error) {
+                console.error("Gagal sinkronisasi background:", error);
+            }
+        }
+
+        // ==========================================
+        // SISTEM BERITA & PROMO
+        // ==========================================
+        function renderNews() {
+            const section = document.getElementById('news-section');
+            const container = document.getElementById('news-container');
+            container.innerHTML = '';
+            
+            if (NEWS_DATA.length === 0) return;
+            section.classList.remove('hidden');
+
+            NEWS_DATA.forEach(news => {
+                container.innerHTML += `
+                    <div onclick="openNews('${news.id}')" class="flex gap-4 bg-white p-3 rounded-xl shadow-sm border border-gray-100 cursor-pointer hover:shadow-md hover:border-brand-200 transition-all group">
+                        <img src="${news.image}" class="w-24 h-24 md:w-32 md:h-32 object-cover rounded-lg shrink-0 group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=News'">
+                        <div class="flex flex-col justify-center py-1 flex-1 min-w-0">
+                            <h3 class="font-bold text-gray-800 text-sm md:text-base leading-snug mb-1 line-clamp-2 group-hover:text-brand-600 transition-colors">${news.title}</h3>
+                            <p class="text-[10px] md:text-xs text-brand-500 font-medium mb-1.5"><i class="far fa-clock mr-1"></i> ${formatDate(news.date)}</p>
+                            <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed">${news.content}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function openNews(id) {
+            const news = NEWS_DATA.find(n => n.id === id);
+            
+            if (!news) {
+                // Tampilan cantik sementara jika data masih diproses dari cloud (HP koneksi lambat)
+                document.getElementById('news-detail-image').src = "https://placehold.co/600x400/e2e8f0/64748b?text=Memuat+Gambar...";
+                document.getElementById('news-detail-title').innerText = "Sedang memuat berita...";
+                document.getElementById('news-detail-date').innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Sinkronisasi ke server...`;
+                document.getElementById('news-detail-content').innerText = "Mohon tunggu sebentar, data sedang ditarik dari Database...";
+            } else {
+                document.getElementById('news-detail-image').src = news.image;
+                document.getElementById('news-detail-title').innerText = news.title;
+                document.getElementById('news-detail-date').innerHTML = `<i class="far fa-clock mr-1"></i> ${formatDate(news.date)}`;
+                document.getElementById('news-detail-content').innerText = news.content;
+            }
+            
+            // Update parameter URL
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('berita', id);
+            window.history.pushState({}, '', newUrl);
+
+            const modal = document.getElementById('news-modal');
+            const modalContent = document.getElementById('news-modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => { 
+                modal.classList.remove('opacity-0'); 
+                modalContent.classList.remove('translate-y-full'); 
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeNews() {
+            const modal = document.getElementById('news-modal');
+            const modalContent = document.getElementById('news-modal-content');
+            modal.classList.add('opacity-0'); 
+            modalContent.classList.add('translate-y-full');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+            document.body.style.overflow = '';
+
+            // Hapus parameter URL ketika modal ditutup
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.delete('berita');
+            window.history.pushState({}, '', newUrl);
+        }
+
+        function copyNewsLink() {
+            const url = window.location.href;
+            const textArea = document.createElement("textarea");
+            textArea.value = url;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showNotification("Link berita berhasil disalin!");
+            } catch (err) {
+                showNotification("Gagal menyalin link.", true);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function checkUrlParams(isBackgroundSync = false) {
+            const params = new URLSearchParams(window.location.search);
+            const beritaId = params.get('berita');
+            
+            if (beritaId) {
+                if (isBackgroundSync) {
+                    // Update konten saja secara halus tanpa animasi berulang jika jendela berita sudah terbuka
+                    const news = NEWS_DATA.find(n => n.id === beritaId);
+                    if (news) {
+                        document.getElementById('news-detail-image').src = news.image;
+                        document.getElementById('news-detail-title').innerText = news.title;
+                        document.getElementById('news-detail-date').innerHTML = `<i class="far fa-clock mr-1"></i> ${formatDate(news.date)}`;
+                        document.getElementById('news-detail-content').innerText = news.content;
+                    }
+                } else {
+                    // Buka modal berita seketika
+                    setTimeout(() => openNews(beritaId), 50);
+                }
+            }
+        }
+
+
+        // ==========================================
+        // UI CUSTOMER LOGIC
+        // ==========================================
+        function renderMenu() {
+            const container = document.getElementById('menu-container');
+            container.innerHTML = '';
+
+            const filteredMenu = currentCategory === 'Semua' ? MENU_DATA : MENU_DATA.filter(item => item.category === currentCategory);
+
+            filteredMenu.forEach(item => {
+                const cartQty = cart[item.id] || 0;
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md transition-shadow';
+                card.innerHTML = `
+                    <div class="relative pb-[70%] overflow-hidden bg-gray-100">
+                        <img src="${item.image}" alt="${item.name}" class="absolute inset-0 w-full h-full object-cover transition-transform hover:scale-105 duration-300" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=Tidak+Ada+Gambar'">
+                        <div class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-xs font-bold text-brand-600 px-2 py-1 rounded-md shadow-sm">
+                            ${item.category}
+                        </div>
+                    </div>
+                    <div class="p-3 flex flex-col flex-1">
+                        <h3 class="font-semibold text-gray-800 text-sm md:text-base leading-tight mb-1">${item.name}</h3>
+                        <p class="text-[11px] md:text-xs text-gray-500 line-clamp-2 mb-2 flex-1">${item.desc}</p>
+                        <div class="font-bold text-brand-600 text-sm md:text-base mb-3">${formatRupiah(item.price)}</div>
+                        
+                        ${cartQty === 0 ? `
+                            <button onclick="addToCart('${item.id}')" class="w-full bg-brand-50 hover:bg-brand-100 text-brand-600 border border-brand-200 font-medium py-1.5 rounded-xl text-sm transition-colors active:scale-95">
+                                <i class="fas fa-plus mr-1"></i> Tambah
+                            </button>
+                        ` : `
+                            <div class="flex items-center justify-between bg-brand-50 rounded-xl p-1 border border-brand-200">
+                                <button onclick="decreaseCart('${item.id}')" class="w-8 h-8 rounded-lg bg-white text-brand-600 shadow-sm flex items-center justify-center hover:bg-gray-50 active:scale-95 transition-all">
+                                    <i class="fas fa-minus text-xs"></i>
+                                </button>
+                                <span class="font-bold text-brand-700 text-sm">${cartQty}</span>
+                                <button onclick="addToCart('${item.id}')" class="w-8 h-8 rounded-lg bg-brand-500 text-white shadow-sm flex items-center justify-center hover:bg-brand-600 active:scale-95 transition-all">
+                                    <i class="fas fa-plus text-xs"></i>
+                                </button>
+                            </div>
+                        `}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterMenu(category) {
+            currentCategory = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-500', 'text-white');
+                btn.classList.add('bg-gray-50', 'text-gray-600');
+            });
+            const activeBtn = document.getElementById(`btn-${category}`);
+            if(activeBtn) {
+                activeBtn.classList.remove('bg-gray-50', 'text-gray-600');
+                activeBtn.classList.add('bg-brand-500', 'text-white');
+            }
+            renderMenu();
+        }
+
+        function addToCart(id) { cart[id] = (cart[id] || 0) + 1; updateCartUI(); renderMenu(); }
+        function decreaseCart(id) { if (cart[id]) { cart[id]--; if (cart[id] === 0) delete cart[id]; } updateCartUI(); renderMenu(); }
+        function removeAllFromCart(id) { delete cart[id]; updateCartUI(); renderMenu(); if (Object.keys(cart).length === 0) toggleCartModal(); }
+
+        function updateCartUI() {
+            let totalItems = 0; let totalPrice = 0;
+            const container = document.getElementById('cart-items-container');
+            container.innerHTML = '';
+
+            for (const [id, qty] of Object.entries(cart)) {
+                const item = MENU_DATA.find(m => m.id === id);
+                if (item) {
+                    totalItems += qty; totalPrice += item.price * qty;
+                    container.innerHTML += `
+                        <div class="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <img src="${item.image}" class="w-16 h-16 object-cover rounded-lg shadow-sm" alt="${item.name}" onerror="this.src='https://placehold.co/100x100/e2e8f0/64748b?text=Img'">
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-gray-800 text-sm">${item.name}</h4>
+                                <div class="text-brand-600 font-bold text-sm">${formatRupiah(item.price)}</div>
+                            </div>
+                            <div class="flex flex-col items-end gap-2">
+                                <button onclick="removeAllFromCart('${item.id}')" class="text-red-400 hover:text-red-600 text-xs"><i class="fas fa-trash"></i> Hapus</button>
+                                <div class="flex items-center bg-white rounded-lg border border-gray-200 p-0.5">
+                                    <button onclick="decreaseCart('${item.id}')" class="w-6 h-6 flex items-center justify-center text-gray-600 active:bg-gray-100 rounded"><i class="fas fa-minus text-[10px]"></i></button>
+                                    <span class="w-6 text-center text-sm font-semibold">${qty}</span>
+                                    <button onclick="addToCart('${item.id}')" class="w-6 h-6 flex items-center justify-center text-brand-600 active:bg-brand-50 rounded"><i class="fas fa-plus text-[10px]"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            document.getElementById('cart-count-badge').innerText = totalItems;
+            document.getElementById('cart-total-floating').innerText = formatRupiah(totalPrice);
+            document.getElementById('qr-total-amount').innerText = formatRupiah(totalPrice);
+            
+            const floatingCart = document.getElementById('floating-cart');
+            if (totalItems > 0) {
+                floatingCart.classList.remove('hidden');
+                setTimeout(() => floatingCart.classList.remove('translate-y-full'), 10);
+            } else {
+                floatingCart.classList.add('translate-y-full');
+                setTimeout(() => floatingCart.classList.add('hidden'), 300);
+            }
+        }
+
+        function toggleCartModal() {
+            const modal = document.getElementById('cart-modal');
+            const modalContent = document.getElementById('cart-modal-content');
+            if (modal.classList.contains('hidden')) {
+                if (Object.keys(cart).length === 0) return showNotification('Keranjang Anda kosong. Pilih menu dulu.');
+                modal.classList.remove('hidden');
+                setTimeout(() => { modal.classList.remove('opacity-0'); modalContent.classList.remove('translate-y-full'); }, 10);
+                document.body.style.overflow = 'hidden'; 
+            } else {
+                modal.classList.add('opacity-0'); modalContent.classList.add('translate-y-full');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+                document.body.style.overflow = '';
+            }
+        }
+
+        function checkoutToWhatsApp() {
+            const nama = document.getElementById('customer-name').value.trim();
+            const catatan = document.getElementById('customer-notes').value.trim();
+            if (!nama) { showNotification('Mohon isi Nama Pemesan.'); document.getElementById('customer-name').focus(); return; }
+
+            let text = `Halo *${NAMA_TOKO}*,\nSaya ingin pesan Take Away:\n\n*Atas Nama:* ${nama}\n`;
+            if (catatan) text += `*Catatan:* ${catatan}\n`;
+            text += `\n*Daftar Pesanan:*\n`;
+
+            let total = 0;
+            for (const [id, qty] of Object.entries(cart)) {
+                const item = MENU_DATA.find(m => m.id === id);
+                if (item) {
+                    const subtotal = item.price * qty; total += subtotal;
+                    text += `- ${qty}x ${item.name} (${formatRupiah(subtotal)})\n`;
+                }
+            }
+            text += `\n*Total Tagihan: ${formatRupiah(total)}*\n\n_Bukti pembayaran QRIS dikirim menyusul._\nMohon segera diproses, terima kasih!`;
+            window.open(`https://wa.me/${WA_ADMIN_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function contactAdmin(e) {
+            e.preventDefault();
+            window.open(`https://wa.me/${WA_ADMIN_NUMBER}?text=${encodeURIComponent(`Halo Admin ${NAMA_TOKO}, saya ingin bertanya...`)}`, '_blank');
+        }
+
+        // ==========================================
+        // SISTEM ADMIN & CLOUD SYNC
+        // ==========================================
+        function checkAdminURL() {
+            const url = window.location.href;
+            if (url.includes('/admin') || url.includes('#admin') || url.includes('?admin')) {
+                document.getElementById('customer-view').classList.add('hidden');
+                document.getElementById('admin-view').classList.remove('hidden');
+                return true;
+            }
+            return false;
+        }
+
+        function switchAdminTab(tab) {
+            document.getElementById('admin-content-menu').classList.add('hidden');
+            document.getElementById('admin-content-news').classList.add('hidden');
+            document.getElementById('admin-tab-menu').classList.remove('border-brand-500', 'text-brand-600');
+            document.getElementById('admin-tab-menu').classList.add('border-transparent', 'text-gray-500');
+            document.getElementById('admin-tab-news').classList.remove('border-brand-500', 'text-brand-600');
+            document.getElementById('admin-tab-news').classList.add('border-transparent', 'text-gray-500');
+
+            if(tab === 'menu') {
+                document.getElementById('admin-content-menu').classList.remove('hidden');
+                document.getElementById('admin-tab-menu').classList.add('border-brand-500', 'text-brand-600');
+                document.getElementById('admin-tab-menu').classList.remove('border-transparent', 'text-gray-500');
+            } else {
+                document.getElementById('admin-content-news').classList.remove('hidden');
+                document.getElementById('admin-tab-news').classList.add('border-brand-500', 'text-brand-600');
+                document.getElementById('admin-tab-news').classList.remove('border-transparent', 'text-gray-500');
+            }
+        }
+
+        function renderAdminList() {
+            const container = document.getElementById('admin-menu-list');
+            container.innerHTML = '';
+            
+            if (MENU_DATA.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 py-6 text-sm">Tidak ada menu. Klik Tambah Menu.</div>';
+            } else {
+                MENU_DATA.forEach(item => {
+                    container.innerHTML += `
+                        <div class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
+                            <img src="${item.image}" class="w-16 h-16 object-cover rounded-xl bg-gray-50 border border-gray-100" onerror="this.src='https://placehold.co/100x100/e2e8f0/64748b?text=Image'">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-bold text-sm text-gray-800 truncate">${item.name}</h4>
+                                <p class="text-xs text-gray-500">${item.category}</p>
+                                <p class="text-sm font-bold text-brand-600">${formatRupiah(item.price)}</p>
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <button onclick="bukaFormAdmin('${item.id}')" class="bg-blue-50 text-blue-600 border border-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition"><i class="fas fa-edit mr-1"></i> Edit</button>
+                                <button onclick="hapusAdmin('${item.id}')" class="bg-red-50 text-red-500 border border-red-100 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-red-100 transition"><i class="fas fa-trash mr-1"></i> Hapus</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // Render juga list berita
+            renderAdminNewsList();
+        }
+
+        function renderAdminNewsList() {
+            const container = document.getElementById('admin-news-list');
+            container.innerHTML = '';
+            
+            if (NEWS_DATA.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 py-6 text-sm">Tidak ada berita. Klik Tambah Berita.</div>';
+                return;
+            }
+
+            NEWS_DATA.forEach(news => {
+                container.innerHTML += `
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
+                        <img src="${news.image}" class="w-16 h-16 object-cover rounded-xl bg-gray-50 border border-gray-100" onerror="this.src='https://placehold.co/100x100/e2e8f0/64748b?text=News'">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-sm text-gray-800 truncate">${news.title}</h4>
+                            <p class="text-xs text-brand-500">${news.date}</p>
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <button onclick="bukaFormAdminNews('${news.id}')" class="bg-blue-50 text-blue-600 border border-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition"><i class="fas fa-edit mr-1"></i> Edit</button>
+                            <button onclick="hapusAdminNews('${news.id}')" class="bg-red-50 text-red-500 border border-red-100 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-red-100 transition"><i class="fas fa-trash mr-1"></i> Hapus</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function bukaFormAdmin(id = null) {
+            document.getElementById('admin-form-modal').classList.remove('hidden');
+            if (id) {
+                const item = MENU_DATA.find(m => m.id === id);
+                document.getElementById('admin-modal-title').innerText = "Edit Menu";
+                document.getElementById('admin-id').value = item.id;
+                document.getElementById('admin-nama').value = item.name;
+                document.getElementById('admin-desc').value = item.desc;
+                document.getElementById('admin-harga').value = item.price;
+                document.getElementById('admin-kategori').value = item.category;
+                document.getElementById('admin-gambar').value = item.image;
+            } else {
+                document.getElementById('admin-modal-title').innerText = "Tambah Menu Baru";
+                document.getElementById('admin-id').value = "ID_" + new Date().getTime();
+                document.getElementById('admin-nama').value = '';
+                document.getElementById('admin-desc').value = '';
+                document.getElementById('admin-harga').value = '';
+                document.getElementById('admin-kategori').value = 'Makanan';
+                document.getElementById('admin-gambar').value = '';
+            }
+        }
+
+        function tutupFormAdmin() { document.getElementById('admin-form-modal').classList.add('hidden'); }
+
+        async function simpanDataAdmin() {
+            const btn = document.getElementById('btn-simpan-admin');
+            const id = document.getElementById('admin-id').value;
+            const nama = document.getElementById('admin-nama').value;
+            const harga = document.getElementById('admin-harga').value;
+            const desc = document.getElementById('admin-desc').value;
+            const kategori = document.getElementById('admin-kategori').value;
+            const gambar = document.getElementById('admin-gambar').value || 'https://placehold.co/400x300/e2e8f0/64748b?text=Tidak+Ada+Gambar';
+
+            if(!nama || !harga) return showNotification("Nama dan Harga Menu wajib diisi!", true);
+
+            // Update UI/Lokal dulu biar cepat
+            const item = { id: id, name: nama, desc: desc, price: parseInt(harga), category: kategori, image: gambar };
+            const existingIndex = MENU_DATA.findIndex(m => m.id === id);
+            if (existingIndex >= 0) MENU_DATA[existingIndex] = item; else MENU_DATA.unshift(item);
+            
+            tutupFormAdmin();
+            renderAdminList();
+
+            // Kirim ke Google Sheets
+            if (GAS_URL) {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+                btn.disabled = true;
+
+                const formData = new URLSearchParams();
+                formData.append('action', 'save');
+                formData.append('id', item.id);
+                formData.append('name', item.name);
+                formData.append('desc', item.desc);
+                formData.append('price', item.price);
+                formData.append('category', item.category);
+                formData.append('image', item.image);
+
+                try {
+                    // mode: 'no-cors' digunakan untuk bypass CORS bawaan Google Script saat metode POST
+                    await fetch(GAS_URL, { method: 'POST', body: formData, mode: 'no-cors' });
+                    showNotification('Tersimpan di Cloud Database!');
+                } catch (e) {
+                    console.error(e);
+                    showNotification('Gagal terhubung ke Cloud. Pastikan URL GAS benar.', true);
+                }
+                
+                btn.innerHTML = '<i class="fas fa-save"></i> Simpan ke Cloud';
+                btn.disabled = false;
+            } else {
+                showNotification("Tersimpan (Lokal Saja). Anda belum mengatur URL GAS.", true);
+            }
+        }
+
+        async function hapusAdmin(id) {
+            if(confirm('Anda yakin ingin menghapus menu ini dari Cloud?')) {
+                // Update Lokal Dulu
+                MENU_DATA = MENU_DATA.filter(m => m.id !== id);
+                renderAdminList();
+
+                if(GAS_URL) {
+                    const formData = new URLSearchParams();
+                    formData.append('action', 'delete');
+                    formData.append('sheet_type', 'menu'); // Tanda spesifik Hapus Menu
+                    formData.append('id', id);
+
+                    try {
+                        await fetch(GAS_URL, { method: 'POST', body: formData, mode: 'no-cors' });
+                        showNotification('Berhasil dihapus dari Cloud.');
+                    } catch (e) {
+                        console.error(e);
+                        showNotification('Gagal menghapus di server Cloud.', true);
+                    }
+                }
+            }
+        }
+
+        // =========================
+        // LOGIC ADMIN BERITA
+        // =========================
+
+        function compressAndPreviewNewsImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800; // Resolusi maksimal untuk menjaga ukuran file tetap kecil
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Kompresi ke format JPEG kualitas 70%
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7); 
+
+                    // Simpan hasil kompresi ke input tersembunyi
+                    document.getElementById('admin-news-image-base64').value = dataUrl;
+                    document.getElementById('admin-news-image').value = ''; 
+                    
+                    // Tampilkan preview gambar
+                    const previewContainer = document.getElementById('admin-news-image-preview-container');
+                    const previewImg = document.getElementById('admin-news-image-preview');
+                    previewImg.src = dataUrl;
+                    previewContainer.classList.remove('hidden');
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function bukaFormAdminNews(id = null) {
+            document.getElementById('admin-form-news-modal').classList.remove('hidden');
+            
+            // Reset input file & base64 tiap buka form
+            document.getElementById('admin-news-image-file').value = '';
+            document.getElementById('admin-news-image-base64').value = '';
+            const previewContainer = document.getElementById('admin-news-image-preview-container');
+            const previewImg = document.getElementById('admin-news-image-preview');
+
+            if (id) {
+                const item = NEWS_DATA.find(n => n.id === id);
+                document.getElementById('admin-news-modal-title').innerText = "Edit Berita";
+                document.getElementById('admin-news-id').value = item.id;
+                document.getElementById('admin-news-title').value = item.title;
+                document.getElementById('admin-news-date').value = item.date;
+                document.getElementById('admin-news-image').value = item.image;
+                document.getElementById('admin-news-content').value = item.content;
+                
+                // Tampilkan gambar jika sudah ada
+                if (item.image) {
+                    previewImg.src = item.image;
+                    previewContainer.classList.remove('hidden');
+                } else {
+                    previewContainer.classList.add('hidden');
+                }
+            } else {
+                document.getElementById('admin-news-modal-title').innerText = "Tambah Berita Baru";
+                document.getElementById('admin-news-id').value = "NEWS_" + new Date().getTime();
+                document.getElementById('admin-news-title').value = '';
+                
+                const today = new Date();
+                const options = { day: 'numeric', month: 'long', year: 'numeric' };
+                document.getElementById('admin-news-date').value = today.toLocaleDateString('id-ID', options);
+                
+                document.getElementById('admin-news-image').value = '';
+                document.getElementById('admin-news-content').value = '';
+                previewContainer.classList.add('hidden');
+            }
+        }
+
+        function tutupFormAdminNews() { document.getElementById('admin-form-news-modal').classList.add('hidden'); }
+
+        async function simpanDataAdminNews() {
+            const btn = document.getElementById('btn-simpan-admin-news');
+            const id = document.getElementById('admin-news-id').value;
+            const title = document.getElementById('admin-news-title').value;
+            const date = document.getElementById('admin-news-date').value;
+            
+            // Pilih Base64 jika admin mengunggah file baru, jika tidak gunakan teks URL
+            const base64Img = document.getElementById('admin-news-image-base64').value;
+            const urlImg = document.getElementById('admin-news-image').value;
+            const image = base64Img || urlImg || 'https://placehold.co/600x400/e2e8f0/64748b?text=News';
+            
+            const content = document.getElementById('admin-news-content').value;
+
+            if(!title || !content) return showNotification("Judul dan Isi Berita wajib diisi!", true);
+
+            // Update UI
+            const item = { id: id, title: title, date: date, image: image, content: content };
+            const existingIndex = NEWS_DATA.findIndex(n => n.id === id);
+            if (existingIndex >= 0) NEWS_DATA[existingIndex] = item; else NEWS_DATA.unshift(item);
+            
+            tutupFormAdminNews();
+            renderAdminNewsList();
+
+            if (GAS_URL) {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+                btn.disabled = true;
+
+                const formData = new URLSearchParams();
+                formData.append('action', 'save');
+                formData.append('sheet_type', 'news');
+                formData.append('id', item.id);
+                formData.append('title', item.title);
+                formData.append('date', item.date);
+                formData.append('image', item.image);
+                formData.append('content', item.content);
+
+                try {
+                    await fetch(GAS_URL, { method: 'POST', body: formData, mode: 'no-cors' });
+                    showNotification('Berita tersimpan di Cloud!');
+                } catch (e) {
+                    console.error(e);
+                    showNotification('Gagal terhubung ke Cloud.', true);
+                }
+                
+                btn.innerHTML = '<i class="fas fa-save"></i> Simpan ke Cloud';
+                btn.disabled = false;
+            }
+        }
+
+        async function hapusAdminNews(id) {
+            if(confirm('Anda yakin ingin menghapus berita ini dari Cloud?')) {
+                NEWS_DATA = NEWS_DATA.filter(n => n.id !== id);
+                renderAdminNewsList();
+
+                if(GAS_URL) {
+                    const formData = new URLSearchParams();
+                    formData.append('action', 'delete');
+                    formData.append('sheet_type', 'news');
+                    formData.append('id', id);
+
+                    try {
+                        await fetch(GAS_URL, { method: 'POST', body: formData, mode: 'no-cors' });
+                        showNotification('Berita dihapus dari Cloud.');
+                    } catch (e) {
+                        console.error(e);
+                        showNotification('Gagal menghapus dari server Cloud.', true);
+                    }
+                }
+            }
+        }
+
+        function keluarAdmin() { window.location.href = window.location.pathname; }
+
+        window.onload = () => {
+            // Selalu mulai dengan menarik data dari database
+            loadDataDariGAS();
+        };
+    </script>
+</body>
+</html>
