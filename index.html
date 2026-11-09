@@ -40,13 +40,24 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .smooth-transition { transition: all 0.3s ease; }
         
-        /* Global Styles untuk Vercel (Kode pemblokir Blogger telah dihapus) */
+        /* Blogger Overrides (Dikembalikan & Diperkuat Anti-Gagal) */
+        .sidebar, #sidebar-wrapper, .sidebar-wrapper, .sidebar-container, 
+        .profile, .Profile, .profile-widget, 
+        #header-wrapper, #footer-wrapper, .post-title, .comments, .post-footer, 
+        #comments, .blog-pager, .date-header, .post-labels, .post-share-buttons,
+        .bg-photo-overlay, .bg-photo, .body-fauxcolumn-outer, .fauxcolumn-outer, .fauxcolumn-inner,
+        #Attribution1, .attribution, .bg-photo-caption, .footer-outer, .footer-cap-top, .footer-cap-bottom, .widget.Attribution,
+        .mobile-header, .mobile-top, .mobile-nav, .mobile-navbar, .blogger-iframe, .Navbar, #navbar-iframe, .header-widget {
+            display: none !important; width: 0 !important; height: 0 !important; margin: 0 !important; padding: 0 !important; opacity: 0 !important; visibility: hidden !important; z-index: -999 !important; pointer-events: none !important;
+        }
+        .main-inner, .columns, .column-center-outer, #main-wrapper, 
+        .post-outer, .post-body, .post, .blog-posts,
+        #outer-wrapper, #content-wrapper, .main-outer, #main, .main, 
+        .page-body, .page_body, .content-inner, .content-outer, .item-view .main {
+            width: 100% !important; max-width: 100% !important; min-width: 100% !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; background: transparent !important; float: none !important;
+        }
         body, html {
-            margin: 0; 
-            padding: 0; 
-            background-color: #f9fafb; 
-            overflow-x: hidden; 
-            width: 100%; 
+            margin: 0 !important; padding: 0 !important; background-color: #f9fafb !important; overflow-x: hidden !important; width: 100% !important; max-width: 100vw !important;
         }
     </style>
 </head>
@@ -205,8 +216,35 @@
     </div>
     </div> <!-- END CUSTOMER VIEW -->
 
+    <!-- ADMIN LOGIN VIEW -->
+    <div id="admin-login-view" class="hidden fixed inset-0 bg-gray-100 z-[99999] flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-sm text-center border border-gray-100">
+            <div class="w-16 h-16 bg-brand-50 text-brand-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Admin Login</h2>
+            <p class="text-xs text-gray-500 mb-6">Silakan masukkan kredensial Anda.</p>
+            <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+                <div class="mb-4 text-left">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Email Admin</label>
+                    <input type="email" id="login-email" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-500 outline-none bg-gray-50 transition-colors" required placeholder="Masukkan email">
+                </div>
+                <div class="mb-6 text-left">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Password</label>
+                    <input type="password" id="login-password" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-500 outline-none bg-gray-50 transition-colors" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full bg-brand-500 text-white font-bold py-3 rounded-xl hover:bg-brand-600 transition shadow-lg shadow-brand-500/30 active:scale-95">
+                    Masuk ke Dashboard
+                </button>
+                <button type="button" onclick="keluarAdmin()" class="w-full mt-3 text-gray-500 font-medium py-2 text-sm hover:text-gray-700 transition">
+                    Kembali ke Beranda
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- ADMIN VIEW PANEL (CLOUD SYNC) -->
-    <div id="admin-view" class="hidden fixed inset-0 bg-gray-100 z-[120] overflow-y-auto pb-24">
+    <div id="admin-view" class="hidden fixed inset-0 bg-gray-100 z-[99990] overflow-y-auto pb-24">
         <div class="max-w-3xl mx-auto p-4 pt-6 md:pt-10">
             <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm mb-6 border border-gray-200">
                 <h1 class="text-xl font-bold text-gray-800"><i class="fas fa-cloud text-brand-500 mr-2"></i> Cloud Admin</h1>
@@ -729,10 +767,35 @@
             const url = window.location.href;
             if (url.includes('/admin') || url.includes('#admin') || url.includes('?admin')) {
                 document.getElementById('customer-view').classList.add('hidden');
-                document.getElementById('admin-view').classList.remove('hidden');
+                
+                // Cek apakah admin sudah login di sesi ini
+                if (sessionStorage.getItem('admin_logged_in') === 'true') {
+                    document.getElementById('admin-view').classList.remove('hidden');
+                } else {
+                    document.getElementById('admin-login-view').classList.remove('hidden');
+                }
                 return true;
             }
             return false;
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+
+            if (user === 'dihack99@gmail.com' && pass === 'hd1234') {
+                sessionStorage.setItem('admin_logged_in', 'true');
+                document.getElementById('admin-login-view').classList.add('hidden');
+                document.getElementById('admin-view').classList.remove('hidden');
+                showNotification('Login berhasil!');
+                
+                // Bersihkan form
+                document.getElementById('login-email').value = '';
+                document.getElementById('login-password').value = '';
+            } else {
+                showNotification('Email atau password salah!', true);
+            }
         }
 
         function switchAdminTab(tab) {
@@ -1071,7 +1134,10 @@
             }
         }
 
-        function keluarAdmin() { window.location.href = window.location.pathname; }
+        function keluarAdmin() { 
+            sessionStorage.removeItem('admin_logged_in'); // Hapus sesi saat keluar
+            window.location.href = window.location.pathname; 
+        }
 
         window.onload = () => {
             // Selalu mulai dengan menarik data dari database
